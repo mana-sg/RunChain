@@ -1,0 +1,82 @@
+# server/.gitignore
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pid*
+*.pid
+*.seed
+*.out
+*.swp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+# Ignore all .env files EXCEPT the example template
+.env
+.env.*
+!.env.example
+
+# Compiled binary addons (if any)
+/build/Release
+/build/Debug
+
+# Test coverage
+/coverage
+/coverage*
+*.lcov
+.nyc_output
+
+# IDE / Editor directories
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-project
+*.sublime-workspace
+.idea
+*.project
+*.classpath
+*.cproject
+*.DS_Store
+Thumbs.db
+
+# SQLite database files (if used locally for testing/dev)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# CRITICAL: Server-side wallet directory
+# Contains sensitive private keys (e.g., for the 'admin' identity)
+# Should be generated locally by each developer following README instructions
+*.id
+
+# Build output directory (if you compile TS or bundle)
+/dist/

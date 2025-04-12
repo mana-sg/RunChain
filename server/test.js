@@ -1,0 +1,14 @@
+import crypto from 'crypto';
+
+const certificate = `-----BEGIN CERTIFICATE-----\nMIIC0DCCAnegAwIBAgIUN09v2MCGVU0XgY3qUVYw/TUlJRcwCgYIKoZIzj0EAwIw\ncDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMQ8wDQYDVQQH\nEwZEdXJoYW0xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh\nLm9yZzEuZXhhbXBsZS5jb20wHhcNMjUwNDEyMDQ1NjAwWhcNMjYwNDEyMTUwMTAw\nWjBHMTAwCwYDVQQLEwRvcmcxMA0GA1UECxMGY2xpZW50MBIGA1UECxMLZGVwYXJ0\nbWVudDExEzARBgNVBAMTCm5ld2VzdHVzZXIwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAAT0fa2iVsS557S5bTuFafXdyHnfoL7rXwsT1a2b/rUy/IVxoyAXU7mXB/Sw\nm1jpml6aMQ3oNrpG0ua9QgRDsijro4IBFjCCARIwDgYDVR0PAQH/BAQDAgeAMAwG\nA1UdEwEB/wQCMAAwHQYDVR0OBBYEFAc5ElGUepF4ciNOv66OVeUSpVNbMB8GA1Ud\nIwQYMBaAFCV0rfMsA+JN3gij329vpQi+xz6BMIGxBggqAwQFBgcIAQSBpHsiYXR0\ncnMiOnsiZW1haWwiOiJrbGFzZGpmQGtzZi5jb20iLCJmaXJzdE5hbWUiOiJrcml0\naW4iLCJoZi5BZmZpbGlhdGlvbiI6Im9yZzEuZGVwYXJ0bWVudDEiLCJoZi5FbnJv\nbGxtZW50SUQiOiJuZXdlc3R1c2VyIiwiaGYuVHlwZSI6ImNsaWVudCIsImxhc3RO\nYW1lIjoidGhha3VyIn19MAoGCCqGSM49BAMCA0cAMEQCIFTnIlbYvwBu8S6NSLTm\nn0GZkARcAmJ1X0v5h+/EmsbQAiB9zKRcw0ZuwFGXBZXOGS6enCRsUHaQtb03gMqp\nVjCunQ==\n-----END CERTIFICATE-----\n`;
+const signatureBase64 = "2UdOx9YyZNfkRZSu2KZzIyHYtCHF90fGH261N80fr92rcgJKnNtc490FpCGWvoBNmqXgYW6yLXgAf03T/6JfyA==";
+const challenge = "1392039d-2f35-446d-8267-f75a777262b3";
+
+const publicKey = crypto.createPublicKey(certificate);
+const signatureBuffer = Buffer.from(signatureBase64, 'base64');
+
+const verifier = crypto.createVerify('SHA256');
+verifier.update(challenge);
+const isVerified = verifier.verify(publicKey, signatureBuffer);
+
+console.log('Signature Verified:', isVerified);

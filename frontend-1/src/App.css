@@ -1,0 +1,189 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Main Styles */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 900px;
+}
+
+/* Navbar Styles */
+.navbar-brand i {
+  color: gold;
+}
+
+.wallet-info {
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+/* Dashboard Styles */
+.balance-circle {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.balance-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.balance-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Earn Rewards Styles */
+.reward-preview {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reward-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4e73df;
+}
+
+.reward-amount span {
+  font-size: 2rem;
+}
+
+/* Redeem Rewards Styles */
+.reward-card {
+  border: 1px solid #e3e6f0;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.reward-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.points-required {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1cc88a;
+  margin: 8px 0;
+}
+
+.points-required span {
+  font-size: 1.2rem;
+}
+
+.balance-display {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e3e6f0;
+  margin-bottom: 10px;
+}
+
+.balance-display .balance {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #4e73df;
+  margin-right: 5px;
+}
+
+.balance-display .points-label {
+  font-size: 0.9rem;
+  color: #858796;
+}
+
+/* Loading Styles */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #858796;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #4e73df;
+  border-color: #4e73df;
+}
+
+.btn-success {
+  background-color: #1cc88a;
+  border-color: #1cc88a;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.card-header {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+  padding: 15px 20px;
+}
+
+.card-body {
+  padding: 20px;
+}

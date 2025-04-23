@@ -1,76 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import { ethers, formatUnits } from 'ethers';
+import { ethers } from 'ethers';
 import './App.css';
-import RewardToken from './contracts/RewardToken.json';
+import RunChainRewardsJSON from './contracts/RunChainRewards.json';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
-import EarnRewards from './components/EarnRewards';
 import RedeemRewards from './components/RedeemRewards';
 import StepTracker from './components/StepTracker';
 
 function App() {
   const [account, setAccount] = useState('');
-  const [balance, setBalance] = useState('0');
+  const [etherBalance, setEtherBalance] = useState('0');
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState('dashboard');
+  const [contractAddress, setContractAddress] = useState(null);
 
   useEffect(() => {
-    loadBlockchainData();
+    connectWallet();
   }, []);
 
-  const loadBlockchainData = async () => {
+  const connectWallet = async () => {
     try {
       // Check if MetaMask is installed
-      if (window.ethereum) {
-        // Request account access
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(accounts[0]);
-
-        // Get the provider and signer
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-
-        // Connect to the contract
-        const networkId = await window.ethereum.request({ method: 'net_version' });
-        const deployedNetwork = RewardToken.networks[networkId];
-
-        if (deployedNetwork) {
-          const tokenContract = new ethers.Contract(
-            deployedNetwork.address,
-            RewardToken.abi,
-            signer
-          );
-
-          setContract(tokenContract);
-
-          // Get the user's balance
-          const userBalance = await tokenContract.balanceOf(accounts[0]);
-          setBalance(formatUnits(userBalance, 18));
-        } else {
-          console.log("RewardToken contract not deployed to detected network.");
-        }
-
-        // Listen for account changes
-        window.ethereum.on('accountsChanged', (accounts) => {
-          setAccount(accounts[0]);
-          loadBlockchainData();
-        });
-
-      } else {
+      if (!window.ethereum) {
         alert("Please install MetaMask to use this application");
+        setLoading(false);
+        return;
       }
+
+      setLoading(true);
+
+      // Request account access
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+
+      // Get the provider and signer
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // Get user's ETH balance
+      const ethBalance = await provider.getBalance(accounts[0]);
+      setEtherBalance(ethers.formatEther(ethBalance));
+
+      // Connect to the contract
+      const networkId = await window.ethereum.request({ method: 'net_version' });
+      const deployedNetwork = RunChainRewardsJSON.networks[networkId];
+
+      if (deployedNetwork) {
+        const rewardsContract = new ethers.Contract(
+          deployedNetwork.address,
+          RunChainRewardsJSON.abi,
+          signer
+        );
+
+        setContract(rewardsContract);
+        setContractAddress(deployedNetwork.address);
+        console.log("Connected to contract at:", deployedNetwork.address);
+      } else {
+        console.error("RunChainRewards contract not deployed to detected network");
+      }
+
+      // Listen for account changes
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setAccount(accounts[0] || '');
+        connectWallet();
+      });
+
+      // Listen for chain changes
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
+
     } catch (error) {
-      console.error("Error loading blockchain data:", error);
+      console.error("Error connecting wallet:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const refreshBalance = async () => {
-    if (contract && account) {
-      const userBalance = await contract.balanceOf(account);
-      setBalance(formatUnits(userBalance, 18));
+    if (window.ethereum && account) {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const balance = await provider.getBalance(account);
+        setEtherBalance(ethers.formatEther(balance));
+      } catch (error) {
+        console.error("Error refreshing balance:", error);
+      }
     }
   };
 
@@ -81,13 +97,27 @@ function App() {
 
     switch (activeComponent) {
       case 'dashboard':
-        return <Dashboard account={account} balance={balance} />;
+        return <Dashboard
+          account={account}
+          balance={etherBalance}
+          contractAddress={contractAddress}
+        />;
       case 'redeem':
-        return <RedeemRewards contract={contract} account={account} balance={balance} refreshBalance={refreshBalance} />;
+        return <RedeemRewards
+          contract={contract}
+          account={account}
+          refreshBalance={refreshBalance}
+        />;
       case 'steps':
-        return <StepTracker contract={contract} account={account} refreshBalance={refreshBalance} />;
+        return <StepTracker
+          account={account}
+        />;
       default:
-        return <Dashboard account={account} balance={balance} />;
+        return <Dashboard
+          account={account}
+          balance={etherBalance}
+          contractAddress={contractAddress}
+        />;
     }
   };
 
@@ -99,7 +129,14 @@ function App() {
         activeComponent={activeComponent}
       />
       <div className="container mt-4">
-        {renderContent()}
+        {!account && !loading ? (
+          <div className="alert alert-warning">
+            <strong>Not connected!</strong> Please connect your MetaMask wallet to use this application.
+            <button className="btn btn-primary ms-3" onClick={connectWallet}>Connect Wallet</button>
+          </div>
+        ) : (
+          renderContent()
+        )}
       </div>
     </div>
   );

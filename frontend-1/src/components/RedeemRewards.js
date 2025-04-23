@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { parseEther, formatEther } from 'ethers';
+import { ethers } from 'ethers';
 
 function RedeemRewards({ contract, account, refreshBalance }) {
   const [points, setPoints] = useState(0);
@@ -19,6 +19,7 @@ function RedeemRewards({ contract, account, refreshBalance }) {
   // Load points from localStorage and contract data
   useEffect(() => {
     loadPointsFromStorage();
+
     if (contract && account) {
       loadContractData();
     }
@@ -27,7 +28,7 @@ function RedeemRewards({ contract, account, refreshBalance }) {
   // Update points in localStorage
   const updatePointsInStorage = (newPoints) => {
     localStorage.setItem('runchain_points', newPoints.toString());
-    setPoints(newPoints);
+    setPoints(parseInt(newPoints, 10));
   };
 
   // Load points from localStorage
@@ -38,13 +39,14 @@ function RedeemRewards({ contract, account, refreshBalance }) {
     }
   };
 
-  console.log(points)
   // Load data from the contract
   const loadContractData = async () => {
+    if (!contract || !account) return;
+
     try {
       // Get contract balance
       const balance = await contract.getContractBalance();
-      setContractBalance(formatEther(balance));
+      setContractBalance(ethers.formatEther(balance));
 
       // Get total points redeemed by user
       const redeemed = await contract.totalPointsRedeemed(account);
@@ -52,7 +54,7 @@ function RedeemRewards({ contract, account, refreshBalance }) {
 
       // Get last redemption timestamp
       const timestamp = await contract.lastRedemptionTimestamp(account);
-      if (timestamp > 0) {
+      if (Number(timestamp) > 0) {
         const date = new Date(Number(timestamp) * 1000);
         setLastRedemptionTime(date.toLocaleString());
       }
@@ -77,10 +79,10 @@ function RedeemRewards({ contract, account, refreshBalance }) {
 
     try {
       // Convert ETH amount to wei
-      const ethValue = parseEther(rewardTier.ethAmount);
+      const ethAmount = ethers.parseEther(rewardTier.ethAmount);
 
       // Call the contract function to redeem ETH
-      const tx = await contract.redeemForEth(ethValue);
+      const tx = await contract.redeemForEth(ethAmount);
       await tx.wait();
 
       // Update points in localStorage
@@ -119,12 +121,6 @@ function RedeemRewards({ contract, account, refreshBalance }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Format timestamp to readable date
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return 'Never';
-    return new Date(timestamp * 1000).toLocaleString();
   };
 
   return (
@@ -188,7 +184,7 @@ function RedeemRewards({ contract, account, refreshBalance }) {
                 <button
                   className="btn btn-success mt-auto"
                   onClick={() => handleRedeem(tier)}
-                  disabled={loading || points < tier.points || !account || !contract}
+                  disabled={loading || points < tier.points || !account || !contract || parseFloat(contractBalance) < parseFloat(tier.ethAmount)}
                 >
                   {loading ? 'Processing...' : 'Redeem Now'}
                 </button>
@@ -199,7 +195,7 @@ function RedeemRewards({ contract, account, refreshBalance }) {
                     </small>
                   </div>
                 )}
-                {points < parseFloat(tier.ethAmount) && (
+                {parseFloat(contractBalance) < parseFloat(tier.ethAmount) && (
                   <div className="text-center mt-2">
                     <small className="text-danger">
                       Insufficient contract balance
